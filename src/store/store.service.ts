@@ -21,16 +21,11 @@ export class StoreService {
     await this.updateCheckInfo();
 
     const arraivedInvoices = await this.invoiceRepository.find({
-      where: {
-        Status: Equal(
-          StatusesEnum.ARRIVED,
-        ),
-      },
       relations: ['Product']
     });
 
 
-    return arraivedInvoices.map((invoice) => {
+    return arraivedInvoices.filter((x) => x.Status != StatusesEnum.CREATED).map((invoice) => {
       const storeInvoiceDto = new StoreInvoiceDto();
       storeInvoiceDto.invoiceId = invoice.InvoiceId;
       storeInvoiceDto.carNumber = invoice.CarNumber;
@@ -105,5 +100,24 @@ export class StoreService {
           })
       });
     })
+  }
+
+  async Invite(invoiceId: string): Promise<void> {
+    const invitedInvoices = await this.invoiceRepository.findOneBy({
+      InvoiceId: Equal(
+        invoiceId,
+      ),
+    });
+
+    if (!invitedInvoices) {
+      return;
+    }
+
+    invitedInvoices.Status = StatusesEnum.INVITED;
+    invitedInvoices.MustBeOnCheckUtc = moment(new Date())
+      .add(30, 'minutes')
+      .toDate()
+
+    this.invoiceRepository.save(invitedInvoices);
   }
 }
