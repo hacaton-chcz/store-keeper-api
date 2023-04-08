@@ -13,7 +13,6 @@ export class StoreController {
 
   @Put('invite/:invoiceId')
   async Invite(@Param('invoiceId') invoiceId: string): Promise<any> {
-    console.log(invoiceId);
     await this.storeService.Invite(invoiceId);
   }
 
