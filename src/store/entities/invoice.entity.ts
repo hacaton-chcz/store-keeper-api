@@ -19,7 +19,7 @@ export class InvoiceEntity extends BaseEntity {
   Id: number;
 
   @Column()
-  InvoiceId: number;
+  InvoiceId: string;
 
   @Column({
     nullable: false,
@@ -36,6 +36,9 @@ export class InvoiceEntity extends BaseEntity {
   @RelationId((invoice: InvoiceEntity) => invoice.Product)
   ProductId: number;
 
+  @Column({ type: 'real' })
+  ProductAmount: number;
+
   @Column()
   From: Date;
 
@@ -48,6 +51,8 @@ export class InvoiceEntity extends BaseEntity {
   @Column()
   StatusUpdatedUtc: Date;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   MustBeOnCheckUtc: Date;
 }
