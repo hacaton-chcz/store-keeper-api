@@ -7,6 +7,7 @@ import { StatusesEnum } from './entities/invoice.entity';
 import { ProductDto, StoreInvoiceDto } from './dto/store-invoice.dto';
 import * as moment from 'moment';
 import { UnitsEnum } from './entities/product.entity';
+import { OnLoadDto } from './dto/on-load.dto';
 
 @Injectable()
 export class StoreService {
@@ -121,10 +122,10 @@ export class StoreService {
     this.invoiceRepository.save(invitedInvoices);
   }
 
-  async Load(invoiceId: string): Promise<void> {
+  async Load(onLoadDto: OnLoadDto): Promise<void> {
     const onLoadInvoice = await this.invoiceRepository.findOneBy({
       InvoiceId: Equal(
-        invoiceId,
+        onLoadDto.invoiceId,
       ),
       Status: Equal(
         StatusesEnum.PASSED_INSPECTION
@@ -137,6 +138,7 @@ export class StoreService {
 
     onLoadInvoice.Status = StatusesEnum.ON_LOAD;
     onLoadInvoice.StatusUpdatedUtc = moment(new Date()).toDate();
+    onLoadInvoice.Entrance = onLoadDto.entrance;
 
     this.invoiceRepository.save(onLoadInvoice);
   }

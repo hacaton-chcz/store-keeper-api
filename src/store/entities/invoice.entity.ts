@@ -55,4 +55,9 @@ export class InvoiceEntity extends BaseEntity {
     nullable: true,
   })
   MustBeOnCheckUtc: Date;
+
+  @Column({
+    nullable: true,
+  })
+  Entrance: string;
 }
