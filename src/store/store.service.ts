@@ -120,4 +120,24 @@ export class StoreService {
 
     this.invoiceRepository.save(invitedInvoices);
   }
+
+  async Load(invoiceId: string): Promise<void> {
+    const onLoadInvoice = await this.invoiceRepository.findOneBy({
+      InvoiceId: Equal(
+        invoiceId,
+      ),
+      Status: Equal(
+        StatusesEnum.PASSED_INSPECTION
+      )
+    });
+
+    if (!onLoadInvoice) {
+      return;
+    }
+
+    onLoadInvoice.Status = StatusesEnum.ON_LOAD;
+    onLoadInvoice.StatusUpdatedUtc = moment(new Date()).toDate();
+
+    this.invoiceRepository.save(onLoadInvoice);
+  }
 }

@@ -16,6 +16,11 @@ export class StoreController {
     await this.storeService.Invite(invoiceId);
   }
 
+  @Put('load/:invoiceId')
+  async Load(@Param('invoiceId') invoiceId: string): Promise<any> {
+    await this.storeService.Load(invoiceId);
+  }
+
   @Get('migrate')
   async MigrateData(): Promise<void> {
     return await this.storeService.AddData();
