@@ -8,6 +8,7 @@ import { ProductDto, StoreInvoiceDto } from './dto/store-invoice.dto';
 import * as moment from 'moment';
 import { UnitsEnum } from './entities/product.entity';
 import { OnLoadDto } from './dto/on-load.dto';
+import { CarForLoadDto } from './dto/car-for-load.dto';
 
 @Injectable()
 export class StoreService {
@@ -58,6 +59,7 @@ export class StoreService {
       .forEach((x) => {
         x.Status = StatusesEnum.ARRIVED;
         x.MustBeOnCheckUtc = null;
+        x.StatusUpdatedUtc = moment(new Date()).toDate();
         this.invoiceRepository.save(x);
       });
   }
@@ -117,12 +119,13 @@ export class StoreService {
     invitedInvoices.Status = StatusesEnum.INVITED;
     invitedInvoices.MustBeOnCheckUtc = moment(new Date())
       .add(30, 'minutes')
-      .toDate()
+      .toDate();
+    invitedInvoices.StatusUpdatedUtc = moment(new Date()).toDate();
 
     this.invoiceRepository.save(invitedInvoices);
   }
 
-  async Load(onLoadDto: OnLoadDto): Promise<void> {
+  async SetLoadStatus(onLoadDto: OnLoadDto): Promise<void> {
     const onLoadInvoice = await this.invoiceRepository.findOneBy({
       InvoiceId: Equal(
         onLoadDto.invoiceId,
@@ -155,11 +158,51 @@ export class StoreService {
       }
     }))[0];
 
-    console.log(onCheckPointInvoice);
     if (!onCheckPointInvoice) {
       return;
     }
 
     return onCheckPointInvoice.CarNumber;
+  }
+
+  async GetCarNumberForLoad(): Promise<CarForLoadDto> {
+    const onLoadInvoice = (await this.invoiceRepository.find({
+      where: {
+        Status: Equal(
+          StatusesEnum.PASSED_INSPECTION
+        )
+      },
+      order: {
+        StatusUpdatedUtc: "ASC"
+      }
+    }))[0];
+
+    if (!onLoadInvoice) {
+      return;
+    }
+
+    const result = new CarForLoadDto();
+    result.number = onLoadInvoice.CarNumber;
+    result.entrance = onLoadInvoice.Entrance;
+
+    return result;
+  }
+
+  async SetCancelLoadStatus(invoiceId: string): Promise<void> {
+    const onLoadInvoice = await this.invoiceRepository.findOneBy({
+      InvoiceId: Equal(
+        invoiceId,
+      ),
+    });
+
+    if (!onLoadInvoice) {
+      return;
+    }
+
+    onLoadInvoice.Status = StatusesEnum.LOAD_END;
+    onLoadInvoice.StatusUpdatedUtc = null;
+    onLoadInvoice.Entrance = null;
+
+    this.invoiceRepository.save(onLoadInvoice);
   }
 }
