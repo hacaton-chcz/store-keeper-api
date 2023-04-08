@@ -23,6 +23,11 @@ export class StoreController {
     await this.storeService.Load(onLoadDto);
   }
 
+  @Get('car-number-for-check')
+  async GetCarNumberForCheckpoint(): Promise<string> {
+    return await this.storeService.GetCarNumberForCheckpoint();
+  }
+
   @Get('migrate')
   async MigrateData(): Promise<void> {
     return await this.storeService.AddData();

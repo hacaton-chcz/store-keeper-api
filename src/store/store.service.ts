@@ -142,4 +142,24 @@ export class StoreService {
 
     this.invoiceRepository.save(onLoadInvoice);
   }
+
+  async GetCarNumberForCheckpoint(): Promise<string> {
+    const onCheckPointInvoice = (await this.invoiceRepository.find({
+      where: {
+        Status: Equal(
+          StatusesEnum.INVITED
+        )
+      },
+      order: {
+        MustBeOnCheckUtc: "ASC"
+      }
+    }))[0];
+
+    console.log(onCheckPointInvoice);
+    if (!onCheckPointInvoice) {
+      return;
+    }
+
+    return onCheckPointInvoice.CarNumber;
+  }
 }
