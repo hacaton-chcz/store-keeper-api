@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  store-api-postgres:
+    container_name: store-api-postgres
+    image: postgres:14.2-alpine
+    restart: always
+    env_file:
+      - .env
+    healthcheck:
+      test: "pg_isready -U $$POSTGRES_USER"
+      timeout: 10s
+      interval: 10s
+      retries: 3
+    ports:
+      - "6510:5432"
+
+  # Should be REMOVED or swapped to DBeaver
+  # https://towardsdatascience.com/how-to-run-postgresql-and-pgadmin-using-docker-3a6a8ae918b5
+  store-api-pgadmin:
+    container_name: store-api-pgadmin
+    image: dpage/pgadmin4:6.5
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "6520:80"
