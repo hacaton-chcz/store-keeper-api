@@ -25,6 +25,7 @@ export class StoreController {
 
   @Get('car-number-for-check')
   async GetCarNumberForCheckpoint(): Promise<string> {
+    console.log('asdsad')
     return await this.storeService.GetCarNumberForCheckpoint();
   }
 
@@ -36,6 +37,16 @@ export class StoreController {
   @Put('cancel-load/:invoiceId')
   async CancelLoad(@Param('invoiceId') invoiceId: string): Promise<any> {
     await this.storeService.SetCancelLoadStatus(invoiceId);
+  }
+
+  @Put('arrived/:invoiceId')
+  async SetArrivedStatus(@Param('invoiceId') invoiceId: string): Promise<any> {
+    await this.storeService.SetArrivedStatus(invoiceId);
+  }
+
+  @Put('check-passed/:invoiceId')
+  async SetCheckPassStatus(@Param('invoiceId') invoiceId: string): Promise<any> {
+    await this.storeService.SetCheckPassStatus(invoiceId);
   }
 
   @Get('migrate')

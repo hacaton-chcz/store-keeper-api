@@ -205,4 +205,39 @@ export class StoreService {
 
     this.invoiceRepository.save(onLoadInvoice);
   }
+
+  async SetArrivedStatus(invoiceId: string): Promise<void> {
+    const arrivedInvoice = await this.invoiceRepository.findOneBy({
+      InvoiceId: Equal(
+        invoiceId,
+      ),
+    });
+
+    if (!arrivedInvoice) {
+      return;
+    }
+
+    arrivedInvoice.Status = StatusesEnum.ARRIVED;
+    arrivedInvoice.StatusUpdatedUtc = moment(new Date()).toDate();
+
+    this.invoiceRepository.save(arrivedInvoice);
+  }
+
+  async SetCheckPassStatus(invoiceId: string): Promise<void> {
+    const checkInvoice = await this.invoiceRepository.findOneBy({
+      InvoiceId: Equal(
+        invoiceId,
+      ),
+    });
+
+    if (!checkInvoice) {
+      return;
+    }
+
+    checkInvoice.Status = StatusesEnum.PASSED_INSPECTION;
+    checkInvoice.StatusUpdatedUtc = moment(new Date()).toDate();
+    checkInvoice.MustBeOnCheckUtc = null;
+
+    this.invoiceRepository.save(checkInvoice);
+  }
 }
